@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube リンクプレーヤー</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, sans-serif;
+        }
+        body {
+            background: #0f0f0f;
+            color: #fff;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ff0000;
+            font-size: 1.8rem;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        input {
+            flex: 1;
+            min-width: 280px;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            background: #272727;
+            color: #fff;
+        }
+        button {
+            padding: 14px 24px;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #cc0000;
+        }
+        .player-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+        .player-container.active {
+            display: block;
+        }
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .note {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>▶ YouTube リンクプレーヤー</h1>
+
+    <div class="input-area">
+        <input type="text" id="urlInput" placeholder="YouTubeのURLを貼り付けてください">
+        <button onclick="playVideo()">再生</button>
+    </div>
+
+    <div class="player-container" id="playerContainer">
+        <iframe id="player" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+
+    <p class="note">
+        ※ このツールは動画のダウンロード・保存は行いません。<br>
+        ※ 動画はYouTube公式の埋め込みプレーヤーで再生されます。<br>
+        ※ 著作権者の設定により再生できない動画がある場合があります。
+    </p>
+
+    <script>
+        function extractVideoId(url) {
+            if (!url) return null;
+            let id = '';
+            if (url.includes('youtu.be/')) {
+                id = url.split('youtu.be/')[1].split(/[?#]/)[0];
+            } else if (url.includes('youtube.com/')) {
+                const match = url.match(/v=([^&]+)/);
+                id = match ? match[1] : null;
+            }
+            return id;
+        }
+
+        function playVideo() {
+            const url = document.getElementById('urlInput').value.trim();
+            const videoId = extractVideoId(url);
+            
+            if (!videoId) {
+                alert('有効なYouTubeのURLを入力してください');
+                return;
+            }
+
+            document.getElementById('player').src = 
+                `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            document.getElementById('playerContainer').classList.add('active');
+        }
+
+        document.getElementById('urlInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') playVideo();
+        });
+    </script>
+</body>
+</html>
